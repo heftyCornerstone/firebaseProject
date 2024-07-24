@@ -4,16 +4,19 @@ import Layout from "./components/layout";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import Login from "./routes/login";
+import RecoveryEmail from "./routes/recovery-email";
 import CreateAccount from "./routes/create-account";
 import { createGlobalStyle, styled } from "styled-components";
 import reset from "styled-reset";
 import LoadingScreen from "./components/loading-screen";
 import {auth} from "./firebase";
+import ProtectedRoute from "./components/protected-route"
+//import {ProtectedRoute} from "./components/protected-route"
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <ProtectedRoute><Layout /></ProtectedRoute>,
     children: [
       {
         path: "",
@@ -32,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: "/create-account",
     element: <CreateAccount />,
+  },
+  {
+    path: "/recovery-email",
+    element: <RecoveryEmail />,
   },
 ]);
 
