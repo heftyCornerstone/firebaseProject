@@ -3,6 +3,8 @@ import { auth, db, storage } from "../firebase";
 import {ITweet} from "./timeline";
 import styled from "styled-components";
 import { deleteObject, ref } from "firebase/storage";
+import { useNavigate } from 'react-router-dom';
+//import { useState } from "react";
 
 const Wrapper = styled.div`
   display: grid;
@@ -44,8 +46,23 @@ const DeleteButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
+const UpdateButton = styled.button`
+  background-color: #1d9bf0;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
+
 export default function Tweet({userName, photo, tweet, userId, id}:ITweet){
     const user = auth.currentUser;
+    const navigate = useNavigate();
+    //const [docId, setDocId] = useState();
     const onDelete = async ()=>{
         const ok = confirm("Are you sure to delete this tweet?");
         if (!ok || user?.uid !== userId) return;
@@ -60,6 +77,16 @@ export default function Tweet({userName, photo, tweet, userId, id}:ITweet){
             console.log(e);
         } finally{}
     }
+    const onUpdate = ()=>{
+      const ok = confirm("Are you sure to update this tweet?");
+      if (!ok || user?.uid !== userId) return;
+      navigate('/update', {
+        state: {
+          id: id,
+          tweet: tweet,
+        },
+      })
+    }
     
     return (
         <Wrapper>
@@ -67,13 +94,13 @@ export default function Tweet({userName, photo, tweet, userId, id}:ITweet){
                 <Username>{userName}</Username>
                 <Payload>{tweet}</Payload>
                 {(user?.uid === userId) ? <DeleteButton onClick={onDelete}>Delete</DeleteButton> : null}
+                {(user?.uid === userId) ? <UpdateButton onClick={onUpdate}>Update</UpdateButton> : null}
             </Column>
             <Column>
                 {photo ? (
                     <Photo src={photo}/>
                 ) : null}                    
             </Column>
-
         </Wrapper>
     )
 }

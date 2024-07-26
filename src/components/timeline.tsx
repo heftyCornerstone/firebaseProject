@@ -1,4 +1,4 @@
-import { collection, doc, onSnapshot, orderBy, query, limit } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, limit } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { db } from "../firebase";
@@ -25,8 +25,6 @@ export default function Timeline(){
     const [tweets, setTweets] = useState<ITweet[]>([]);
     //데이터 쿼리
     let unsubscribe: Unsubscribe | null = null;
-    const docc = doc(db, "tweets", "4D8IYJZN6euzRDNq86Ni");
-    console.log('success', docc);
     useEffect(()=>{
         const fetchTweets = async()=>{
             const tweetsQuery = query(
@@ -48,7 +46,7 @@ export default function Timeline(){
                     
                 })
                 setTweets(tweets);
-            })
+            });
         };
         fetchTweets();
         return () => {
