@@ -43,6 +43,9 @@ const AvatarInput = styled.input`
 const Name = styled.span`
   font-size: 22px;
 `;
+const ChangeNameInput = styled.input`
+  font-size: 22px;
+`
 
 const Tweets = styled.div`
   display: flex;
@@ -51,10 +54,39 @@ const Tweets = styled.div`
   gap: 10px;
 `;
 
+const ChangeNameButton = styled.button`
+  background-color: #1d9bf0;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [nameChange, setNameChange] = useState(false);
+  const [newName, setNewName] = useState("");
+  
+  const showNameInput = ()=>{
+    if (!user) return;
+    setNameChange(current=>!current);
+  }
+  const onChangeName = (e:React.ChangeEvent<HTMLInputElement>)=>{
+    const {value} = e.target;
+    setNewName(value);
+  }
+  const onSubmit = async()=>{
+    if (!user) return;
+    await updateProfile(user, {displayName:newName});
+    setNameChange(current=>!current);
+  }
+  
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -115,7 +147,23 @@ export default function Profile() {
         type="file"
         accept="image/*"
       />
-      <Name>{user?.displayName ?? "Anonymous"}</Name>
+      {(nameChange) ? (
+        <form onSubmit={onSubmit}>
+          <ChangeNameInput 
+            onChange={onChangeName} 
+            value={newName} 
+            name="changedName" 
+            placeholder="New name" 
+            type="text" 
+            required
+          />
+          <input type="submit" value="Submit"/>
+        </form>) : (
+          <>
+            <Name>{user?.displayName ?? "Anonymous"}</Name>
+            <ChangeNameButton onClick={showNameInput}>Change name</ChangeNameButton>
+          </>
+      )}
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />
